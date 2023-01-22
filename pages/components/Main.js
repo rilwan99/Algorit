@@ -1,11 +1,11 @@
 export default function Main() {
   return (
-    <section class="text-gray-600 body-font">
-      <div class="max-w-5xl pt-52 pb-24 mx-auto">
-        <h1 class="text-80 text-center font-4 lh-6 ld-04 font-bold text-white mb-6">
+    <section className="text-gray-600 body-font">
+      <div className="max-w-5xl pt-52 pb-24 mx-auto">
+        <h1 className="text-80 text-center font-4 lh-6 ld-04 font-bold text-white mb-6">
           Next Level NFT Analytics
         </h1>
-        <h2 class="text-2xl font-4 font-semibold lh-6 ld-04 pb-11 text-blue-600 text-center">
+        <h2 className="text-2xl font-4 font-semibold lh-6 ld-04 pb-11 text-blue-600 text-center">
           Focused on Profit and Loss Metrics
           <br />
           to drive thesis-driven NFT investments
@@ -18,7 +18,7 @@ export default function Main() {
               src="/logo-white.svg"
             ></img>
           </div>
-          <h3 class="text-1xl font-4 font-semibold lh-6 ld-04 pb-5 text-gray-600 text-center">
+          <h3 className="text-1xl font-4 font-semibold lh-6 ld-04 pb-5 text-gray-600 text-center">
             Powered By
           </h3>
           <a
@@ -49,45 +49,45 @@ export default function Main() {
         styled with Tailwind CSS.
       </p>
       <div className="pt-12 pb-24 max-w-4xl mx-auto fsac4 md:px-1 px-3">
-        <div class="ktq4">
+        <div className="ktq4">
           <img className="w-10" src="https://nine4.app/favicon.png"></img>
-          <h3 class="pt-3 font-semibold text-lg text-white">
+          <h3 className="pt-3 font-semibold text-lg text-white">
             Lorem ipsum dolor sit amet
           </h3>
-          <p class="pt-2 value-text text-md text-gray-200 fkrr1">
+          <p className="pt-2 value-text text-md text-gray-200 fkrr1">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
             tincidunt a libero in finibus. Maecenas a nisl vitae ante rutrum
             porttitor.
           </p>
         </div>
-        <div class="ktq4">
+        <div className="ktq4">
           <img className="w-10" src="https://nine4.app/favicon.png"></img>
-          <h3 class="pt-3 font-semibold text-lg text-white">
+          <h3 className="pt-3 font-semibold text-lg text-white">
             Lorem ipsum dolor sit amet
           </h3>
-          <p class="pt-2 value-text text-md text-gray-200 fkrr1">
+          <p className="pt-2 value-text text-md text-gray-200 fkrr1">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
             tincidunt a libero in finibus. Maecenas a nisl vitae ante rutrum
             porttitor.
           </p>
         </div>
-        <div class="ktq4">
+        <div className="ktq4">
           <img className="w-10" src="https://nine4.app/favicon.png"></img>
-          <h3 class="pt-3 font-semibold text-lg text-white">
+          <h3 className="pt-3 font-semibold text-lg text-white">
             Lorem ipsum dolor sit amet
           </h3>
-          <p class="pt-2 value-text text-md text-gray-200 fkrr1">
+          <p className="pt-2 value-text text-md text-gray-200 fkrr1">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
             tincidunt a libero in finibus. Maecenas a nisl vitae ante rutrum
             porttitor.
           </p>
         </div>
-        <div class="ktq4">
+        <div className="ktq4">
           <img className="w-10" src="https://nine4.app/favicon.png"></img>
-          <h3 class="pt-3 font-semibold text-lg text-white">
+          <h3 className="pt-3 font-semibold text-lg text-white">
             Lorem ipsum dolor sit amet
           </h3>
-          <p class="pt-2 value-text text-md text-gray-200 fkrr1">
+          <p className="pt-2 value-text text-md text-gray-200 fkrr1">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
             tincidunt a libero in finibus. Maecenas a nisl vitae ante rutrum
             porttitor.
@@ -95,12 +95,12 @@ export default function Main() {
         </div>
       </div>
       <div className="pt-32 pb-32 max-w-6xl mx-auto fsac4 md:px-1 px-3">
-        <div class="ktq4">
+        <div className="ktq4">
           <img src="https://nine4.app/images/nine4-3.png"></img>
-          <h3 class="pt-3 font-semibold text-lg text-white">
+          <h3 className="pt-3 font-semibold text-lg text-white">
             Lorem ipsum dolor sit amet
           </h3>
-          <p class="pt-2 value-text text-md text-gray-200 fkrr1">
+          <p className="pt-2 value-text text-md text-gray-200 fkrr1">
             Fusce pharetra ligula mauris, quis faucibus lectus elementum vel.
             Nullam vehicula, libero at euismod tristique, neque ligula faucibus
             urna, quis ultricies massa enim in nunc. Vivamus ultricies, quam ut
@@ -108,12 +108,12 @@ export default function Main() {
             odio.
           </p>
         </div>
-        <div class="ktq4">
+        <div className="ktq4">
           <img src="https://nine4.app/images/nine4-3.png"></img>
-          <h3 class="pt-3 font-semibold text-lg text-white">
+          <h3 className="pt-3 font-semibold text-lg text-white">
             Lorem ipsum dolor sit amet
           </h3>
-          <p class="pt-2 value-text text-md text-gray-200 fkrr1">
+          <p className="pt-2 value-text text-md text-gray-200 fkrr1">
             Fusce pharetra ligula mauris, quis faucibus lectus elementum vel.
             Nullam vehicula, libero at euismod tristique, neque ligula faucibus
             urna, quis ultricies massa enim in nunc. Vivamus ultricies, quam ut
@@ -122,13 +122,13 @@ export default function Main() {
           </p>
         </div>
       </div>
-      <section class="relative pb-24">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <div class="py-24 md:py-36">
-            <h1 class="mb-5 text-6xl font-bold text-white">
+      <section className="relative pb-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          <div className="py-24 md:py-36">
+            <h1 className="mb-5 text-6xl font-bold text-white">
               Subscribe to our newsletter
             </h1>
-            <h1 class="mb-9 text-2xl font-semibold text-gray-200">
+            <h1 className="mb-9 text-2xl font-semibold text-gray-200">
               Enter your email address and get our newsletters straight away.
             </h1>
             <input
@@ -136,13 +136,13 @@ export default function Main() {
               placeholder="jack@example.com"
               name="email"
               autocomplete="email"
-              class="border border-gray-600 w-1/4 pr-2 pl-2 py-3 mt-2 rounded-md text-gray-800 font-semibold hover:border-gray-700 bg-black"
+              className="border border-gray-600 w-1/4 pr-2 pl-2 py-3 mt-2 rounded-md text-gray-800 font-semibold hover:border-gray-700 bg-black"
             />{" "}
             <a
-              class="inline-flex items-center px-14 py-3 mt-2 ml-2 font-medium text-black transition duration-500 ease-in-out transform bg-transparent border rounded-lg bg-white"
+              className="inline-flex items-center px-14 py-3 mt-2 ml-2 font-medium text-black transition duration-500 ease-in-out transform bg-transparent border rounded-lg bg-white"
               href="/"
             >
-              <span class="justify-center">Subscribe</span>
+              <span className="justify-center">Subscribe</span>
             </a>
           </div>
         </div>
