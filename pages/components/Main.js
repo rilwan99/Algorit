@@ -134,8 +134,6 @@ export default function Main() {
             <input
               type="email"
               placeholder="jack@example.com"
-              name="email"
-              autocomplete="email"
               className="border border-gray-600 w-1/4 pr-2 pl-2 py-3 mt-2 rounded-md text-gray-800 font-semibold hover:border-gray-700 bg-black"
             />{" "}
             <a

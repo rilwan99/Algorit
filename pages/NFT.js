@@ -4,11 +4,15 @@ import { useState } from "react";
 import {
   Metaplex,
 } from "@metaplex-foundation/js";
-import { Connection, clusterApiUrl, PublicKey, Keypair } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
+import { getAccount, getMint } from "@solana/spl-token";
 
 export default function NftAnalysis() {
   const [inputAddress, setInputAddress] = useState("");
   const [error, setError] = useState("");
+
+  const rpcUrl = process.env.NEXT_PUBLIC_HELIUS_RPC_URL;
+  const connection = new Connection(rpcUrl);
 
   const handleSubmit = async (inputAddress) => {
     if (!inputAddress) {
@@ -34,9 +38,27 @@ export default function NftAnalysis() {
   const processNft = async (mintAddress) => {
     try {
       setError("");
-      const result = await getNftInfo(inputAddress);
+      const result = await getNftInfo(mintAddress);
       console.log("getNftInfo Result ", result);
-      const response = await fetch(`/api/getNftPnL?address=${inputAddress}`);
+
+      const largestAccounts = await connection.getTokenLargestAccounts(mintAddress)
+      const largestTokenAccount = largestAccounts.value[0].address
+      const currentAccount = largestTokenAccount.toString()
+      const largestAccountInfo = await connection.getParsedAccountInfo(
+        largestTokenAccount
+      );
+      const currentOwner = largestAccountInfo.value.data.parsed.info.owner
+      console.log("Current Owner ", currentOwner)
+      console.log("Token Account ", currentAccount)
+
+      const response = await fetch(`/api/getNftPnL`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ mintAddress, currentOwner, currentAccount })
+      });
+
       const data = await response.json();
       console.log("API result ", data);
     } catch (err) {
@@ -48,8 +70,6 @@ export default function NftAnalysis() {
 
   const getNftInfo = async (inputAddress) => {
     try {
-      const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL;
-      const connection = new Connection(rpcUrl);
       const metaplex = new Metaplex(connection);
       const mintAddress = new PublicKey(inputAddress);
       const nft = await metaplex.nfts().findByMint({ mintAddress });
