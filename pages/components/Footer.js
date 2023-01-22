@@ -5,7 +5,7 @@ export default function Footer() {
         <div className="container flex flex-col items-center justify-center mx-auto pt-5 pb-4 border-t lg:flex-row bg-top border-white">
           <p>
             Built exclusively for the Solana{" "}
-            <a class=" hover:text-white font-semibold tr04" href="https://www.sandstormhackathon.com/">
+            <a className=" hover:text-white font-semibold tr04" href="https://www.sandstormhackathon.com/">
               Sandstorm
             </a>
             {" "} Hackathon
