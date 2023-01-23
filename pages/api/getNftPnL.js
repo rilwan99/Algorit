@@ -6,27 +6,24 @@ export default async function handler(req, res) {
   if (req.method == "POST") {
     try {
       const { mintAddress, currentOwner, currentAccount } = req.body;
-
-      const url = `https://api.helius.xyz/v1/nft-events?api-key=${HELIUS_API_KEY}`;
-      const { data } = await axios.post(url, {
-        query: {
-          accounts: [mintAddress],
-          types: ["NFT_MINT"],
-        },
-      });
-      const mintInfo = data.result[0];
-      const accountsInvolved = mintInfo.tokenTransfers[0];
-
-      const anotherTransfer = await getRelatedTransactions(accountsInvolved.toTokenAccount)
-    //   response.anotherTransfer = anotherTransfer
-
+      const mintInfo = await getMintTransaction(mintAddress)
       const response = {
-        mint: mintInfo,
-        tokenAccount: accountsInvolved.toTokenAccount,
-        userAccount: accountsInvolved.toUserAccount,
-        anotherTransfer
+        mintInfo,
       };
+      let transactionInfo = mintInfo
+      let count = 0;
 
+      while (true) {
+        let receivingTokenAccount = transactionInfo.tokenTransfers[0].toTokenAccount;
+        if (receivingTokenAccount === currentAccount) {
+            break;
+        }
+        console.log("Fetching transaction data for ", receivingTokenAccount)
+        let anotherTransfer = await getRelatedTransactions(receivingTokenAccount)
+        response[`iteration_${count}`] = anotherTransfer
+        transactionInfo = anotherTransfer
+        count++;
+      } 
       res.status(200).json(response);
     } catch (err) {
       console.log("Error in getNftPnL ", err);
@@ -38,9 +35,29 @@ export default async function handler(req, res) {
 }
 
 const getRelatedTransactions = async (tokenAccount) => {
-    const transactionType = "TRANSFER"
-    const url = `https://api.helius.xyz/v0/addresses/${tokenAccount}/transactions?api-key=${HELIUS_API_KEY}&type=${transactionType}`
+    const url = `https://api.helius.xyz/v0/addresses/${tokenAccount}/transactions?api-key=${HELIUS_API_KEY}`
     const { data } = await axios.get(url)
-    const response = data
-    return response
+
+    const transactionArray = data
+    let result
+    for (let i=0; i<transactionArray.length; i++) {
+        let tokenAccountsInvolved = transactionArray[i].tokenTransfers
+        if (tokenAccountsInvolved.length !== 0 && tokenAccountsInvolved[0].fromTokenAccount === tokenAccount) {
+            result = transactionArray[i]
+            break;
+        } 
+    }
+    return result
+}
+
+const getMintTransaction = async (mintAddress) => {
+    const url = `https://api.helius.xyz/v1/nft-events?api-key=${HELIUS_API_KEY}`;
+    const { data } = await axios.post(url, {
+      query: {
+        accounts: [mintAddress],
+        types: ["NFT_MINT"],
+      },
+    });
+    const mintInfo = data.result[0];
+    return mintInfo
 }
