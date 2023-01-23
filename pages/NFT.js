@@ -3,12 +3,13 @@ import Footer from "./components/Footer";
 import { useState } from "react";
 import { Metaplex } from "@metaplex-foundation/js";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { getAccount, getMint } from "@solana/spl-token";
+import sample from "./sample.json";
 
 export default function NftAnalysis() {
   const [inputAddress, setInputAddress] = useState("");
   const [error, setError] = useState("");
   const [loadingMetadata, setLoadingMetadata] = useState(false);
+  const [loadingTransaction, setLoadingTransaction] = useState(true);
   const [submit, setSubmit] = useState(false);
 
   const [title, setTitle] = useState("");
@@ -16,12 +17,16 @@ export default function NftAnalysis() {
   const [imageLink, setImageLink] = useState("");
   const [attributes, setAttributes] = useState([]);
 
+  const [transactionHistory, setTransactionHistory] = useState([]);
+
   const rpcUrl = process.env.NEXT_PUBLIC_HELIUS_RPC_URL;
   const connection = new Connection(rpcUrl);
 
   const handleSubmit = async (inputAddress) => {
     setLoadingMetadata(true);
     setSubmit(false);
+    setLoadingTransaction(true);
+
     if (!inputAddress) {
       setError(
         "Mint Address is required. Please enter a valid address to proceed"
@@ -31,23 +36,53 @@ export default function NftAnalysis() {
     }
     try {
       const mintAddress = new PublicKey(inputAddress);
-      const result = await getNftInfo(mintAddress);
-      console.log("getNftInfo Result ", result);
+      const nftMetadata = await getNftInfo(mintAddress);
+      console.log("getNftInfo Result ", nftMetadata);
       setError("");
       setLoadingMetadata(false);
       setSubmit(true);
 
-      await processNft(mintAddress);
+      const rawTransactionHistory = await getTransactionHistory(mintAddress);
+      const parsedTransactionHistory = processTransactionHistory(
+        rawTransactionHistory
+      );
+      setLoadingTransaction(false);
+      setTransactionHistory(parsedTransactionHistory);
+      console.log("Transaction history ", transactionHistory);
     } catch (err) {
       setError(
         "Input Provided is not a valid Solana Address. Please enter a valid address to proceed"
       );
       setLoadingMetadata(false);
+      console.log(err);
       return;
     }
   };
 
-  const processNft = async (mintAddress) => {
+  const processTransactionHistory = (rawTransactionHistory) => {
+    let parsedTransactionArray = [];
+    for (let key in rawTransactionHistory) {
+      let parsedTransactionFormat = {};
+      parsedTransactionFormat.description =
+        rawTransactionHistory[key].description;
+      parsedTransactionFormat.signature = rawTransactionHistory[key].signature;
+      parsedTransactionFormat.timestamp = rawTransactionHistory[key].timestamp;
+      parsedTransactionFormat.slot = rawTransactionHistory[key].slot;
+      parsedTransactionFormat.type = rawTransactionHistory[key].type;
+      parsedTransactionFormat.fromTokenAccount =
+        rawTransactionHistory[key].tokenTransfers[0].fromTokenAccount;
+      parsedTransactionFormat.toTokenAccount =
+        rawTransactionHistory[key].tokenTransfers[0].toTokenAccount;
+      parsedTransactionFormat.fromUserAccount =
+        rawTransactionHistory[key].tokenTransfers[0].fromUserAccount;
+      parsedTransactionFormat.toUserAccount =
+        rawTransactionHistory[key].tokenTransfers[0].toUserAccount;
+      parsedTransactionArray.push(parsedTransactionFormat);
+    }
+    return parsedTransactionArray;
+  };
+
+  const getTransactionHistory = async (mintAddress) => {
     try {
       const largestAccounts = await connection.getTokenLargestAccounts(
         mintAddress
@@ -70,8 +105,9 @@ export default function NftAnalysis() {
       // });
 
       // const data = await response.json();
-      // console.log("API result ", data);
-      console.log("API Call ended");
+      const data = sample;
+      console.log("API result ", data);
+      return data;
     } catch (err) {
       setError("An unexpected error occurred");
       console.log(err);
@@ -137,7 +173,7 @@ export default function NftAnalysis() {
         </div>
 
         {submit && (
-          <div className="ktq4 flex pt-12 pb-24 mb-20 items-center justify-center mx-auto fsac4 md:px-2 px-3 w-1/2">
+          <div className="ktq4 flex pt-12 pb-24 mb-10 items-center justify-center mx-auto fsac4 md:px-2 px-3 w-1/2">
             <img src={imageLink}></img>
 
             <div>
@@ -163,6 +199,68 @@ export default function NftAnalysis() {
         {loadingMetadata && (
           <div className="container flex flex-col items-center justify-center mx-auto w-1/4">
             <img src="loading.gif" />
+          </div>
+        )}
+        {!loadingTransaction && (
+          <div className=" flex pt-12 pb-24 mb-10 items-center justify-center mx-auto fsac4 md:px-2 px-3 w-1/2">
+            <ol class="relative border-l border-gray-200 dark:border-gray-700">
+              {transactionHistory.map((transaction, index) => {
+                return (
+                  <li key={index} class="mb-10 ml-6">
+                    <span class="absolute flex items-center justify-center w-5 h-6 rounded-full -left-3 ring-8 ring-blue-900 bg-blue-900">
+                      <h3 className="text-white font-semibold">{index + 1}</h3>
+                    </span>
+
+                    <h3 class="flex items-center mb-2 text-lg font-semibold text-white">
+                      {transaction.description}
+                      {!transaction.description && "Not Available"}
+                      {transaction.type == "NFT_MINT" && (
+                        <span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-6 px-2.5 py-0.5 rounded bg-blue-900 text-blue-300 ml-3">
+                          Mint
+                        </span>
+                      )}
+                      {transaction.type == "NFT_SALE" && (
+                        <span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-6 px-2.5 py-0.5 rounded bg-blue-900 text-blue-300 ml-3">
+                          Sale
+                        </span>
+                      )}
+                    </h3>
+
+                    <time class="block mb-2 text-sm font-normal leading-none text-gray-300">
+                      {transaction.timestamp}
+                    </time>
+
+                    <div className="flex items-center">
+                      <p class="mb-1 text-base font-semibold text-gray-400">
+                        Signature:
+                      </p>
+                      <p class="mb-1 ml-2 text-base font-normal text-gray-400">
+                        {transaction.signature}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center">
+                      <p class="mb-1 text-base font-semibold text-gray-400">
+                        User Account:
+                      </p>
+                      <p class="mb-1 ml-2 text-base font-normal text-gray-400">
+                        {transaction.toUserAccount}
+                        {!transaction.toUserAccount && "Not Available"}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center">
+                      <p class="mb-1 text-base font-semibold text-gray-400">
+                        Token Account:
+                      </p>
+                      <p class="mb-1 ml-2 text-base font-normal text-gray-400">
+                        {transaction.toTokenAccount}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
           </div>
         )}
       </section>
