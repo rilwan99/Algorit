@@ -113,16 +113,16 @@ export default function NftAnalysis() {
       console.log("Current Owner ", currentOwner);
       console.log("Token Account ", currentAccount);
 
-      // const response = await fetch(`/api/getNftTransactions`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ mintAddress, currentOwner, currentAccount }),
-      // });
-      // const data = await response.json();
+      const response = await fetch(`/api/getNftTransactions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mintAddress, currentOwner, currentAccount }),
+      });
+      const data = await response.json();
 
-      const data = sample;
+      // const data = sample;
       console.log("API result ", data);
       return data;
     } catch (err) {
