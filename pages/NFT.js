@@ -1,66 +1,77 @@
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { useState } from "react";
-import {
-  Metaplex,
-} from "@metaplex-foundation/js";
+import { Metaplex } from "@metaplex-foundation/js";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { getAccount, getMint } from "@solana/spl-token";
 
 export default function NftAnalysis() {
   const [inputAddress, setInputAddress] = useState("");
   const [error, setError] = useState("");
+  const [loadingMetadata, setLoadingMetadata] = useState(false);
+  const [submit, setSubmit] = useState(false);
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [imageLink, setImageLink] = useState("");
+  const [attributes, setAttributes] = useState([]);
 
   const rpcUrl = process.env.NEXT_PUBLIC_HELIUS_RPC_URL;
   const connection = new Connection(rpcUrl);
 
   const handleSubmit = async (inputAddress) => {
+    setLoadingMetadata(true);
+    setSubmit(false);
     if (!inputAddress) {
       setError(
         "Mint Address is required. Please enter a valid address to proceed"
       );
+      setLoadingMetadata(false);
       return;
     }
     try {
       const mintAddress = new PublicKey(inputAddress);
-      console.log("MintAddress: ", mintAddress);
+      const result = await getNftInfo(mintAddress);
+      console.log("getNftInfo Result ", result);
       setError("");
+      setLoadingMetadata(false);
+      setSubmit(true);
+
       await processNft(mintAddress);
-      console.log("HandleSubmit completed")
     } catch (err) {
       setError(
         "Input Provided is not a valid Solana Address. Please enter a valid address to proceed"
       );
+      setLoadingMetadata(false);
       return;
     }
   };
 
   const processNft = async (mintAddress) => {
     try {
-      setError("");
-      const result = await getNftInfo(mintAddress);
-      console.log("getNftInfo Result ", result);
-
-      const largestAccounts = await connection.getTokenLargestAccounts(mintAddress)
-      const largestTokenAccount = largestAccounts.value[0].address
-      const currentAccount = largestTokenAccount.toString()
+      const largestAccounts = await connection.getTokenLargestAccounts(
+        mintAddress
+      );
+      const largestTokenAccount = largestAccounts.value[0].address;
+      const currentAccount = largestTokenAccount.toString();
       const largestAccountInfo = await connection.getParsedAccountInfo(
         largestTokenAccount
       );
-      const currentOwner = largestAccountInfo.value.data.parsed.info.owner
-      console.log("Current Owner ", currentOwner)
-      console.log("Token Account ", currentAccount)
+      const currentOwner = largestAccountInfo.value.data.parsed.info.owner;
+      console.log("Current Owner ", currentOwner);
+      console.log("Token Account ", currentAccount);
 
-      const response = await fetch(`/api/getNftPnL`, {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ mintAddress, currentOwner, currentAccount })
-      });
+      // const response = await fetch(`/api/getNftPnL`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ mintAddress, currentOwner, currentAccount }),
+      // });
 
-      const data = await response.json();
-      console.log("API result ", data);
+      // const data = await response.json();
+      // console.log("API result ", data);
+      console.log("API Call ended");
     } catch (err) {
       setError("An unexpected error occurred");
       console.log(err);
@@ -73,6 +84,12 @@ export default function NftAnalysis() {
       const metaplex = new Metaplex(connection);
       const mintAddress = new PublicKey(inputAddress);
       const nft = await metaplex.nfts().findByMint({ mintAddress });
+
+      //Set State variables
+      setTitle(nft.name);
+      setDescription(nft.json.description);
+      setImageLink(nft.json.image);
+      setAttributes(nft.json.attributes);
       return nft;
     } catch (err) {
       console.log("Error in getNFTInfo", err);
@@ -119,19 +136,35 @@ export default function NftAnalysis() {
           {error && <p className="text-red-500">{error}</p>}
         </div>
 
-        <div className="ktq4 flex pt-12 pb-24 mb-20 items-center justify-center mx-auto fsac4 md:px-1 px-3 w-1/2">
-          <img src="y00t.png"></img>
+        {submit && (
+          <div className="ktq4 flex pt-12 pb-24 mb-20 items-center justify-center mx-auto fsac4 md:px-2 px-3 w-1/2">
+            <img src={imageLink}></img>
 
-          <div>
-            <h3 className="pt-3 font-semibold text-lg text-white">
-              y00t #1234
-            </h3>
-            <p className="pt-2 value-text text-md text-gray-200 fkrr1">
-              y00t is the second collection released by Degods Labs, The leading
-              NFT Collection on Solana. Lorem ipsum ..
-            </p>
+            <div>
+              <h3 className="pt-3 font-semibold text-lg text-white">{title}</h3>
+              <p className="pt-2 mb-4 value-text text-md text-gray-200 fkrr1">
+                {description}
+              </p>
+
+              {attributes.map((trait, index) => {
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                  >
+                    {trait.trait_type} : {trait.value}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
+        {loadingMetadata && (
+          <div className="container flex flex-col items-center justify-center mx-auto w-1/4">
+            <img src="loading.gif" />
+          </div>
+        )}
       </section>
       <Footer />
     </div>
