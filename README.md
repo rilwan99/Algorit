@@ -1,5 +1,14 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Algorit
+## Description
+Algorit is a tool that simplifies the often confusing process of Solana transactions, particularly for those unfamiliar with cryptocurrency. Unlike other Solana Blockchain explorers, Algorit clearly displays the transfer of ownership of NFTs, making the transaction process user-friendly, easy to understand and intuitive. 
 
+## Environment Variables
+The following environment variables are required:
+```bash
+HELIUS_API_KEY
+NEXT_PUBLIC_HELIUS_RPC_URL
+```
+Head over to [helius](https://helius.xyz/) developer portal and connect your wallet to request for the required keys.
 ## Getting Started
 
 First, run the development server:
