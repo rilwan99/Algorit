@@ -60,26 +60,19 @@ export default function NftAnalysis() {
   };
 
   const processTransactionHistory = (rawTransactionHistory) => {
-    let parsedTransactionArray = [];
-    for (let key in rawTransactionHistory) {
-      let parsedTransactionFormat = {};
-      parsedTransactionFormat.description =
-        rawTransactionHistory[key].description;
-      parsedTransactionFormat.signature = rawTransactionHistory[key].signature;
-      parsedTransactionFormat.timestamp = rawTransactionHistory[key].timestamp;
-      parsedTransactionFormat.slot = rawTransactionHistory[key].slot;
-      parsedTransactionFormat.type = rawTransactionHistory[key].type;
-      parsedTransactionFormat.fromTokenAccount =
-        rawTransactionHistory[key].tokenTransfers[0].fromTokenAccount;
-      parsedTransactionFormat.toTokenAccount =
-        rawTransactionHistory[key].tokenTransfers[0].toTokenAccount;
-      parsedTransactionFormat.fromUserAccount =
-        rawTransactionHistory[key].tokenTransfers[0].fromUserAccount;
-      parsedTransactionFormat.toUserAccount =
-        rawTransactionHistory[key].tokenTransfers[0].toUserAccount;
-      parsedTransactionArray.push(parsedTransactionFormat);
-    }
-    return parsedTransactionArray;
+    return Object.entries(rawTransactionHistory).map(([key, item]) => {
+      return {
+        description: item.description,
+        signature: item.signature,
+        timestamp: item.timestamp,
+        slot: item.slot,
+        type: item.type,
+        fromTokenAccount: item.tokenTransfers[0].fromTokenAccount,
+        toTokenAccount: item.tokenTransfers[0].toTokenAccount,
+        fromUserAccount: item.tokenTransfers[0].fromUserAccount,
+        toUserAccount: item.tokenTransfers[0].toUserAccount
+      }
+    });
   };
 
   const getTransactionHistory = async (mintAddress) => {
@@ -96,16 +89,16 @@ export default function NftAnalysis() {
       console.log("Current Owner ", currentOwner);
       console.log("Token Account ", currentAccount);
 
-      // const response = await fetch(`/api/getNftPnL`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ mintAddress, currentOwner, currentAccount }),
-      // });
+      const response = await fetch(`/api/getNftTransactions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mintAddress, currentOwner, currentAccount }),
+      });
 
-      // const data = await response.json();
-      const data = sample;
+      const data = await response.json();
+      // const data = sample;
       console.log("API result ", data);
       return data;
     } catch (err) {
@@ -196,17 +189,21 @@ export default function NftAnalysis() {
             </div>
           </div>
         )}
+        {!submit && !loadingMetadata && (
+          <div className="pt-24 pb-44 mb-5">
+          </div>
+        )}
         {loadingMetadata && (
           <div className="container flex flex-col items-center justify-center mx-auto w-1/4">
             <img src="loading.gif" />
           </div>
         )}
         {!loadingTransaction && (
-          <div className=" flex pt-12 pb-24 mb-10 items-center justify-center mx-auto fsac4 md:px-2 px-3 w-1/2">
+          <div className=" flex pt-12 pb-14 items-center justify-center mx-auto fsac4 md:px-2 px-3 w-1/2">
             <ol class="relative border-l border-gray-200 dark:border-gray-700">
               {transactionHistory.map((transaction, index) => {
                 return (
-                  <li key={index} class="mb-10 ml-6">
+                  <li key={index} class="mb-5 ml-6">
                     <span class="absolute flex items-center justify-center w-5 h-6 rounded-full -left-3 ring-8 ring-blue-900 bg-blue-900">
                       <h3 className="text-white font-semibold">{index + 1}</h3>
                     </span>
@@ -215,12 +212,12 @@ export default function NftAnalysis() {
                       {transaction.description}
                       {!transaction.description && "Not Available"}
                       {transaction.type == "NFT_MINT" && (
-                        <span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-6 px-2.5 py-0.5 rounded bg-blue-900 text-blue-300 ml-3">
+                        <span class="bg-green-900 text-white text-sm font-medium mr-2 mb-6 px-2.5 py-0.5 rounded ml-3">
                           Mint
                         </span>
                       )}
                       {transaction.type == "NFT_SALE" && (
-                        <span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-6 px-2.5 py-0.5 rounded bg-blue-900 text-blue-300 ml-3">
+                        <span class="bg-red-900 text-white text-sm font-medium mr-2 mb-6 px-2.5 py-0.5 rounded ml-3">
                           Sale
                         </span>
                       )}
